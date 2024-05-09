@@ -1,0 +1,46 @@
+comm_args:
+  backend: sp
+common_args:
+  alpha_dirichlet: 0.5
+  config_version: dev
+  dirichlet_seed: 2152041540
+  mlops_api_key: c9356b9c4ce44363bb66366b210201
+  mlops_project_name: simulation_2
+  mlops_run_name: fedml_torch_fedavg_mnist_lr_1
+  random_seed: 0
+  training_type: simulation
+data_args:
+  data_cache_dir: ~/.cache/fedml_data
+  dataset: CIFAR100
+  partition_alpha: 0.5
+  partition_method: hetero
+device_args:
+  gpu_id: 2
+  using_gpu: true
+model_args:
+  model: RESNET_18
+tracking_args:
+  enable_tracking: false
+  enable_wandb: true
+  resume_wandb: false
+  run_name: Dir:0.5_Dataset:CIFAR100_lr:0.02_optim:FedAvg
+  wandb_entity: shubham22124
+  wandb_key: d99d2566208f899b41fe157bc466bece6d1789e2
+  wandb_project: Neurips2024
+train_args:
+  batch_size: 32
+  client_id_list: '[]'
+  client_num_in_total: 100
+  client_num_per_round: 10
+  client_optimizer: sgd
+  comm_round: 500
+  epochs: 4
+  federated_optimizer: FedOpt
+  group_norm_size: 0
+  learning_rate: 0.03
+  server_lr: 0.02
+  server_optim: false
+  server_optimizer: FedAvg
+  weight_decay: 0.001
+validation_args:
+  frequency_of_the_test: 5

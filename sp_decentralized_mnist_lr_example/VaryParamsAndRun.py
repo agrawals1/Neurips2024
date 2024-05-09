@@ -17,7 +17,7 @@ learning_rates = [0.02, 0.002, 0.0005]
 comm_rounds = [500]
 # seeds = [3087732978, 918854724, 2152041540, 548193746, 993522575, 1531166731, 3136455588, 3525945833, 2018934764, 1770634816]
 seeds = [993522575]
-server_optims = ["DFW", "Adam", "FedAvg"]
+server_optims = ["FedAvg"]
 
 
 def run_federation_with_semaphore(semaphore, beta, dataset, lr, optim, gpu_id):

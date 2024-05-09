@@ -76,6 +76,8 @@ class FedOptAPI(object):
         self.val_global = sample/home/chaoyanghe/zhtang_FedML/python/fedml/simulation/sp/fedopt/__pycache___testset
 
     def _instanciate_opt(self):
+        if self.args.server_optimizer == 'FedAvg':
+            return
         if self.args.server_optimizer == 'DFW':
             self.opt = DFW(self.model_trainer.model.parameters(), eta=.001, momentum=0.9, weight_decay=.00001, eps=1e-5)
         else:
