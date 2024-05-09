@@ -125,15 +125,18 @@ class FedOptAPI(object):
             # update global weights
             w_avg, loss_avg = self._aggregate(w_locals)
             # server optimizer
-            self.opt.zero_grad()
-            opt_state = self.opt.state_dict()
-            self._set_model_global_grads(w_avg)
-            self._instanciate_opt()
-            self.opt.load_state_dict(opt_state)
-            if self.args.server_optim and self.args.server_optimizer == 'Adam':          
-                self.opt.step()
-            elif self.args.server_optim and self.args.server_optimizer == 'DFW':                                      
-                self.opt.step(loss_avg)
+            if self.args.server_optimizer != 'FedAvg':
+                self.opt.zero_grad()
+                opt_state = self.opt.state_dict()
+                self._set_model_global_grads(w_avg)
+                self._instanciate_opt()
+                self.opt.load_state_dict(opt_state)
+                if self.args.server_optim and self.args.server_optimizer == 'Adam':          
+                    self.opt.step()
+                elif self.args.server_optim and self.args.server_optimizer == 'DFW':                                      
+                    self.opt.step(loss_avg)
+            else:
+                self.model_trainer.set_model_params(w_avg)
             w_global = self.model_trainer.get_model_params()
 
             # test results

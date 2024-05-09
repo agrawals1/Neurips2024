@@ -95,5 +95,5 @@ def create(args, output_dim):
         create_mnn_resnet20_model(args.global_model_file_path)
         model = None  # for server MNN, the model is saved as computational graph and then send it to clients.
     else:
-        raise Exception("no such model definition, please check the argument spelling or customize your own model")
+        raise Exception(f"no such model definition:{model_name} or dataset:{args.dataset} combination, please check the argument spelling or customize your own model")
     return model
