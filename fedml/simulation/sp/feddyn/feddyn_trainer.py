@@ -147,27 +147,31 @@ class FedDynTrainer(object):
                 w_global[key] -= self.server_state[key]
 
             self.model_trainer.set_model_params(w_global)
-            mlops.event("agg", event_started=False, event_value=str(round_idx))
+        #     mlops.event("agg", event_started=False, event_value=str(round_idx))
 
-            # test results
-            # at last round
-            if round_idx == self.args.comm_round - 1:
-                # self._local_test_on_all_clients(round_idx)
-                self.args.round_idx = round_idx
-                self.test(self.test_global, self.device, self.args)
-            # per {frequency_of_the_test} round
-            elif round_idx % self.args.frequency_of_the_test == 0 and round_idx > 0:
-                if self.args.dataset.startswith("stackoverflow"):
-                    self._local_test_on_validation_set(round_idx)
-                else:
-                    # self._local_test_on_all_clients(round_idx)
-                    self.args.round_idx = round_idx
-                    self.test(self.test_global, self.device, self.args)
+        #     # test results
+        #     # at last round
+        #     if round_idx == self.args.comm_round - 1:
+        #         # self._local_test_on_all_clients(round_idx)
+        #         self.args.round_idx = round_idx
+        #         self.test(self.test_global, self.device, self.args)
+        #     # per {frequency_of_the_test} round
+        #     elif round_idx % self.args.frequency_of_the_test == 0 and round_idx > 0:
+        #         if self.args.dataset.startswith("stackoverflow"):
+        #             self._local_test_on_validation_set(round_idx)
+        #         else:
+        #             # self._local_test_on_all_clients(round_idx)
+        #             self.args.round_idx = round_idx
+        #             self.test(self.test_global, self.device, self.args)
 
-            mlops.log_round_info(self.args.comm_round, round_idx)
+        #     mlops.log_round_info(self.args.comm_round, round_idx)
 
-        mlops.log_training_finished_status()
-        mlops.log_aggregation_finished_status()
+        # mlops.log_training_finished_status()
+        # mlops.log_aggregation_finished_status()
+        
+        w_global = self.model_trainer.get_model_params()
+        # test results
+        self._test_global_model_on_global_data(w_global, round_idx, False)
 
     def _client_sampling(self, round_idx, client_num_in_total, client_num_per_round):
         if client_num_in_total == client_num_per_round:
@@ -245,7 +249,23 @@ class FedDynTrainer(object):
 
         stats = {"test_acc": test_acc, "test_loss": test_loss}
         logging.info(stats)
-
+        
+    def _test_global_model_on_global_data(self, w_global, round_idx, return_val=False):
+        logging.info("################test_global_model_on_global_dataset################")
+        self.model_trainer.set_model_params(w_global)
+        metrics_test = self.model_trainer.test(self.test_global, self.device, self.args)
+        if return_val:
+            return metrics_test
+        # metrics_train = self.model_trainer.test(self.train_global, self.device, self.args)
+        test_acc = metrics_test["test_correct"] / metrics_test["test_total"]
+        test_loss = metrics_test["test_loss"] / metrics_test["test_total"]
+        # train_acc = metrics_train["test_correct"] / metrics_train["test_total"]
+        # train_loss = metrics_train["test_loss"] / metrics_train["test_total"]
+        stats = {"test_acc": test_acc, "test_loss":test_loss}
+        logging.info(stats)
+        if self.args.enable_wandb:
+            wandb.log({"Global Test Acc": test_acc, "round":round_idx})
+            wandb.log({"Global Test Loss": test_loss, "round":round_idx})
 
     def _local_test_on_all_clients(self, round_idx):
 

@@ -13,6 +13,9 @@ import logging
 
 class ModelTrainerCLS(ClientTrainer):
     def get_model_params(self):
+        t = self.args.gpu_id
+        device = f"cuda:{t}"
+        self.model.to(device)
         return self.model.state_dict()
 
     def set_model_params(self, model_parameters):

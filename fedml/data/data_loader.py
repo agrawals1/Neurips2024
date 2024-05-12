@@ -259,7 +259,7 @@ def load_synthetic_data(args):
     else:
         full_batch = False
 
-    datasets = ["MNIST", "CIFAR10", "FashionMNIST", "CIFAR100"]
+    datasets = ["MNIST", "CIFAR10", "FMNIST", "CIFAR100"]
 
     if dataset_name in datasets:
         logging.info("load_data. dataset_name = %s" % dataset_name)

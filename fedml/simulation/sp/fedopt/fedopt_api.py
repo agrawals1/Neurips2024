@@ -10,6 +10,8 @@ from fedml.ml.trainer.trainer_creator import create_model_trainer
 from .client import Client
 from .optrepo import OptRepo
 from fedml.simulation.sp.fedavg.FEDDFW import DFW
+import torch_optimizer as tor_optim
+from dog import DoG, LDoG, PolynomialDecayAverager
 
 class FedOptAPI(object):
     def __init__(self, args, device, dataset, model):
@@ -80,6 +82,12 @@ class FedOptAPI(object):
             return
         if self.args.server_optimizer == 'DFW':
             self.opt = DFW(self.model_trainer.model.parameters(), eta=.001, momentum=0.9, weight_decay=.00001, eps=1e-5)
+        elif self.args.server_optimizer == 'Yogi':            
+            self.opt = tor_optim.Yogi(self.model_trainer.model.parameters(), lr=1.0)
+        elif self.args.server_optimizer == 'Dog' or self.args.server_optimizer == 'LDog':
+            opt_class = LDoG if self.args.server_optimizer == 'LDog' else DoG
+            self.opt = opt_class(self.model_trainer.model.parameters(), reps_rel = 1e-6, lr = 1.0)
+            self.avgr = PolynomialDecayAverager(self.model_trainer.model, gamma=8)  
         else:
             self.opt = OptRepo.name2cls(self.args.server_optimizer)(
             # self.model_global.parameters(), lr=self.args.server_lr
@@ -133,8 +141,11 @@ class FedOptAPI(object):
                 self._set_model_global_grads(w_avg)
                 self._instanciate_opt()
                 self.opt.load_state_dict(opt_state)
-                if self.args.server_optim and self.args.server_optimizer == 'Adam':          
+                if self.args.server_optim and (self.args.server_optimizer == 'Adam' or self.args.server_optimizer == 'Yogi'):          
                     self.opt.step()
+                elif self.args.server_optim and (self.args.server_optimizer == 'Dog' or self.args.server_optimizer == 'LDog'):
+                    self.opt.step()
+                    self.avgr.step()
                 elif self.args.server_optim and self.args.server_optimizer == 'DFW':                                      
                     self.opt.step(loss_avg)
             else:

@@ -20,7 +20,7 @@ def create(args, output_dim):
     global model
     model_name = args.model
     logging.info("create_model. model_name = %s, output_dim = %s" % (model_name, output_dim))
-    if model_name == "CNN_Mnist" and args.dataset == "MNIST":
+    if model_name == "CNN_Mnist" and (args.dataset == "MNIST" or args.dataset == "FMNIST"):
         logging.info("CNN + MNIST")
         model = MnistNet()
     elif model_name == "RESNET_18" and args.dataset == "CIFAR10":

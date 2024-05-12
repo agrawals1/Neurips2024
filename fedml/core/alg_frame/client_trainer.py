@@ -18,8 +18,10 @@ class ClientTrainer(ABC):
     """
 
     def __init__(self, model, args):
+        t = args.gpu_id
+        device = f"cuda:{t}"
+        model.to(device)
         self.model = model
-        self.model.to('cpu') if not torch.cuda.is_available() else self.model.to(f'cuda:{args.gpu_id}')
         self.id = 0
         self.args = args
         self.local_train_dataset = None

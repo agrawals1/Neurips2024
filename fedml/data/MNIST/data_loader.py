@@ -236,7 +236,7 @@ def load_dataset(dataset_name, transform):
             "dir": "MNIST",
             "num_classes": 10
         },
-        "FashionMNIST": {
+        "FMNIST": {
             "class": datasets.FashionMNIST,
             "dir": "FashionMNIST",
             "num_classes": 10
@@ -284,7 +284,7 @@ def read_data_dirichlet(args, dataset_name, alpha, num_clients=7):
     else:        
         transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+            transforms.Normalize((0.2859,), (0.3530,))
         ])
     
     train_dataset, test_dataset, num_classes = load_dataset(dataset_name, transform)
