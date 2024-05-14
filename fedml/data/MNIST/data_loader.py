@@ -238,7 +238,7 @@ def load_dataset(dataset_name, transform):
         },
         "FMNIST": {
             "class": datasets.FashionMNIST,
-            "dir": "FashionMNIST",
+            "dir": "FMNIST",
             "num_classes": 10
         },
         "CIFAR100": {
